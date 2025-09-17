@@ -89,7 +89,10 @@ Below are some example screenshots of the GDELT Niche Tracker dashboard:
 ![World Map](screenshots/world_map.png)
 
 ---
+## Live Demo
 
+Try the app live on Streamlit Cloud:  
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdelt-niche-tracker-kdaf43gn4cvvhwx5xvacqk.streamlit.app/)
 
 ## License
 
