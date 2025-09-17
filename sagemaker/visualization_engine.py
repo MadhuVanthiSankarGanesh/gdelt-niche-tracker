@@ -364,12 +364,6 @@ class VisualizationEngine:
                 sent_viz = self.create_sentiment_distribution(analysis_data, query)
                 if sent_viz: visualizations['sentiment_distribution'] = sent_viz
             
-            # Content analysis
-            content_data = analysis_data.get('content_analysis', {})
-            if content_data.get('word_cloud_data'):
-                cloud_viz = self.create_word_cloud(analysis_data, query)
-                if cloud_viz: visualizations['word_cloud'] = cloud_viz
-            
             # Temporal analysis
             if analysis_data.get('temporal_analysis'):
                 time_viz = self.create_coverage_timeline(analysis_data, query)
