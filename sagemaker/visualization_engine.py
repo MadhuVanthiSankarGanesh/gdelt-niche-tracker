@@ -6,7 +6,6 @@ import pandas as pd
 from typing import Dict, Any, Optional, List
 import logging
 import seaborn as sns
-from wordcloud import WordCloud
 from textblob import TextBlob
 import numpy as np
 
@@ -142,65 +141,6 @@ class VisualizationEngine:
                         'NEUTRAL': 'blue'
                     })
         fig.update_layout(width=600, height=500)
-        return fig
-    
-    def create_word_cloud(self, analysis_data: Dict[str, Any], query: str = None) -> Optional[go.Figure]:
-        """Create word cloud from keywords for any topic"""
-        content_data = analysis_data.get('content_analysis', {})
-        word_cloud_data = content_data.get('word_cloud_data', {})
-        
-        if not word_cloud_data:
-            return None
-        
-        # Generate word cloud
-        wordcloud = WordCloud(
-            width=1200,
-            height=600,
-            background_color='white',
-            colormap='viridis',
-            max_words=50,
-            relative_scaling=0.5,
-            prefer_horizontal=0.7
-        ).generate_from_frequencies(word_cloud_data)
-        
-        # Get the image array
-        img_array = wordcloud.to_array()
-        
-        # Create plotly figure
-        fig = px.imshow(
-            img_array,
-            binary_string=True,
-            aspect='auto'
-        )
-        
-        # Update layout
-        title = f'Key Topics: {query}' if query else 'Key Topics'
-        fig.update_layout(
-            title=dict(
-                text=title,
-                x=0.5,
-                y=0.98,
-                xanchor='center',
-                yanchor='top',
-                font=dict(size=20)
-            ),
-            width=1200,
-            height=600,
-            xaxis=dict(
-                showticklabels=False,
-                showgrid=False,
-                zeroline=False
-            ),
-            yaxis=dict(
-                showticklabels=False,
-                showgrid=False,
-                zeroline=False
-            ),
-            margin=dict(l=20, r=20, t=50, b=20),
-            paper_bgcolor='white',
-            plot_bgcolor='white'
-        )
-        
         return fig
     
     def create_source_analysis_chart(self, analysis_data: Dict[str, Any], query: str = None) -> Optional[go.Figure]:
