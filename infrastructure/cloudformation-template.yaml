@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'GDELT Niche Tracker Infrastructure'
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: 'gdelt-niche-data-bucket'
+  NicheQuery:
+    Type: String
+    Default: 'theme:CLIMATE_CHANGE'
+
+Resources:
+  GdeltDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldFiles
+            Status: Enabled
+            ExpirationInDays: 30
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${BucketName}'
+                  - !Sub 'arn:aws:s3:::${BucketName}/*'
+        - PolicyName: SSMAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/gdelt-niche-tracker/*'
+
+  GdeltCollectorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: 'gdelt-data-collector'
+      Runtime: python3.9
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          from datetime import datetime, timezone
+          import requests
+          import os
+          
+          def lambda_handler(event, context):
+              # Function code will be updated via deployment
+              return {'statusCode': 200, 'body': 'Initial function'}
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !Ref BucketName
+          GDELT_QUERY: !Ref NicheQuery
+      Timeout: 300
+      MemorySize: 512
+
+  HourlyTrigger:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Trigger GDELT collector every hour"
+      ScheduleExpression: "cron(0 * * * ? *)"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt GdeltCollectorFunction.Arn
+          Id: "GdeltCollectorTarget"
+
+  InvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt GdeltCollectorFunction.Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt HourlyTrigger.Arn
+
+Outputs:
+  BucketName:
+    Description: "S3 Bucket for storing GDELT data"
+    Value: !Ref BucketName
+  LambdaFunctionName:
+    Description: "GDELT Data Collector Lambda Function"
+    Value: !Ref GdeltCollectorFunction

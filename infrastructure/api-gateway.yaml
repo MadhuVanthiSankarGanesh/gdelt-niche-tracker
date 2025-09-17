@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  GDELTApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: gdelt-api
+      Description: API for GDELT queries
+
+  ApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref GDELTApi
+      ParentId: !GetAtt GDELTApi.RootResourceId
+      PathPart: query
+
+  ApiMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref GDELTApi
+      ResourceId: !Ref ApiResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDemandProcessor.Arn}/invocations
+        IntegrationResponses:
+          - StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+
+  OnDemandProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: gdelt-on-demand-processor
+      Runtime: python3.9
+      Handler: on-demand-processor.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          # Lambda code will be added here
+      Environment:
+        Variables:
+          S3_BUCKET_NAME: !Ref GDELTDataBucket
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref GDELTApi
+      StageName: prod
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${GDELTApi}.execute-api.${AWS::Region}.amazonaws.com/prod/query

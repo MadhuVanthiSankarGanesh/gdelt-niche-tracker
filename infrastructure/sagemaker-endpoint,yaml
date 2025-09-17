@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SageMaker Endpoint for GDELT Predictions'
+
+Resources:
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+  PredictionEndpoint:
+    Type: AWS::SageMaker::Endpoint
+    Properties:
+      EndpointName: 'gdelt-prediction-endpoint'
+      EndpointConfigName: !Ref EndpointConfig
+
+  EndpointConfig:
+    Type: AWS::SageMaker::EndpointConfig
+    Properties:
+      EndpointConfigName: 'gdelt-endpoint-config'
+      ProductionVariants:
+        - VariantName: 'primary'
+          ModelName: !Ref Model
+          InitialInstanceCount: 1
+          InstanceType: 'ml.t2.medium'
+          InitialVariantWeight: 1.0
+
+  Model:
+    Type: AWS::SageMaker::Model
+    Properties:
+      ModelName: 'gdelt-prediction-model'
+      ExecutionRoleArn: !GetAtt SageMakerExecutionRole.Arn
+      PrimaryContainer:
+        Image: '683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-xgboost:1.5-1'
+        ModelDataUrl: !Sub 's3://${S3Bucket}/models/model.tar.gz'
+
+Parameters:
+  S3Bucket:
+    Type: String
+    Default: 'gdelt-niche-data-bucket'
+
+Outputs:
+  EndpointName:
+    Description: "SageMaker Endpoint Name"
+    Value: !Ref PredictionEndpoint
