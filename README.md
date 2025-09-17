@@ -71,6 +71,19 @@ A Streamlit-based analytics dashboard for exploring global news trends using the
 - Make sure your `.env` file is correctly configured for AWS and API access.
 - For Streamlit Cloud, ensure all dependencies are listed in `requirements.txt`.
 
+## Screenshots
+
+Below are some example screenshots of the GDELT Niche Tracker dashboard:
+
+| Data Collection Page | Data Analysis Page | World Coverage Map |
+|----------------------|-------------------|-------------------|
+| ![Data Collection](screenshots/data_collection.png) | ![Data Analysis](screenshots/data_analysis.png) | ![World Map](screenshots/world_map.png) |
+
+> _Place your screenshots in a `screenshots/` folder in the project root. Update the image filenames as needed._
+
+---
+
+
 ## License
 
 MIT License
