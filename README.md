@@ -75,11 +75,14 @@ A Streamlit-based analytics dashboard for exploring global news trends using the
 
 Below are some example screenshots of the GDELT Niche Tracker dashboard:
 
-| Data Collection Page | Data Analysis Page | World Coverage Map |
-|----------------------|-------------------|-------------------|
-| ![Data Collection](screenshots/data_collection.png) | ![Data Analysis](screenshots/data_analysis.png) | ![World Map](screenshots/world_map.png) |
+**Data Collection Page**  
+![Data Collection](screenshots/data_collection.png)
 
-> _Place your screenshots in a `screenshots/` folder in the project root. Update the image filenames as needed._
+**Data Analysis Page**  
+![Data Analysis](screenshots/data_analysis.png)
+
+**World Coverage Map**  
+![World Map](screenshots/world_map.png)
 
 ---
 
