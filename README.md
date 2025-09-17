@@ -81,6 +81,10 @@ Below are some example screenshots of the GDELT Niche Tracker dashboard:
 **Data Analysis Page**  
 ![Data Analysis](screenshots/data_analysis.png)
 
+![Data Analysis](screenshots/data_analysis_1.png)
+
+![Data Analysis](screenshots/data_analysis_2.png)
+
 **World Coverage Map**  
 ![World Map](screenshots/world_map.png)
 
