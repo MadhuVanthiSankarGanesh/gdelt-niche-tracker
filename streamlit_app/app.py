@@ -86,7 +86,29 @@ def check_collection_status(query, collection_id):
     aws_clients = get_aws_clients()
     s3_client = aws_clients['s3']
     bucket_name = st.secrets.get('S3_BUCKET_NAME')
-    
+
+    # --- GUARD: Ensure query and collection_id are valid ---
+    if not query or not collection_id:
+        st.warning("No query or collection ID provided. Please start a new collection or select a valid one.")
+        # --- SHOW STATUS IF ANY EXIST IN BUCKET ---
+        try:
+            # List all status files in the bucket
+            status_files = s3_client.list_objects_v2(
+                Bucket=bucket_name,
+                Prefix="status/"
+            ).get("Contents", [])
+            if status_files:
+                st.markdown("### Available Status Files in S3:")
+                for obj in status_files:
+                    st.write(obj["Key"])
+            else:
+                st.info("No status files found in S3 bucket.")
+        except Exception as e:
+            st.error(f"Could not list status files: {str(e)}")
+        # -------------------------------------------
+        return None
+    # -------------------------------------------------------
+
     try:
         status_key = f'status/{query.lower().replace(" ", "_")}_{collection_id}.json'
         response = s3_client.get_object(
@@ -97,6 +119,21 @@ def check_collection_status(query, collection_id):
         return status_data
     except Exception as e:
         st.error(f"Error checking collection status: {str(e)}")
+        # --- SHOW STATUS IF ANY EXIST IN BUCKET ON ERROR ---
+        try:
+            status_files = s3_client.list_objects_v2(
+                Bucket=bucket_name,
+                Prefix="status/"
+            ).get("Contents", [])
+            if status_files:
+                st.markdown("### Available Status Files in S3:")
+                for obj in status_files:
+                    st.write(obj["Key"])
+            else:
+                st.info("No status files found in S3 bucket.")
+        except Exception as e2:
+            st.error(f"Could not list status files: {str(e2)}")
+        # ---------------------------------------------------
         return None
 
 def get_collected_data(query, collection_id, min_articles=1):
