@@ -34,7 +34,17 @@ A Streamlit-based analytics dashboard for exploring global news trends using the
    > Python 3.13+ is not compatible with `wordcloud` as of now.
 
 3. **Configure environment variables:**
-   - Save your credentials in .env file 
+   - Save your credentials in .env file
+   ```
+   AWS_ACCESS_KEY_ID=
+   AWS_SECRET_ACCESS_KEY=
+   AWS_S3_BUCKET=
+   AWS_DEFAULT_REGION=
+   AWS_ACCOUNT_ID=
+   NEWS_LAMBDA_NAME=
+   WORKER_LAMBDA_NAME=
+   SQS_QUEUE_URL=
+   ```
 
 4. **Run the Streamlit app:**
    ```
