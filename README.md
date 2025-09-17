@@ -21,7 +21,7 @@ A Streamlit-based analytics dashboard for exploring global news trends using the
 
 1. **Clone the repository:**
    ```
-   git clone <your-repo-url>
+   git clone gdelt-niche-tracker
    cd gdelt-niche-tracker
    ```
 
@@ -34,7 +34,7 @@ A Streamlit-based analytics dashboard for exploring global news trends using the
    > Python 3.13+ is not compatible with `wordcloud` as of now.
 
 3. **Configure environment variables:**
-   - Copy `.env` and fill in your AWS and API credentials.
+   - Save your credentials in .env file 
 
 4. **Run the Streamlit app:**
    ```
